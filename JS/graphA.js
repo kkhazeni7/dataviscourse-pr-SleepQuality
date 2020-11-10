@@ -91,8 +91,14 @@ class Graph
 
         var coffeeData = [];
         var teaData = [];
+        var workoutData = [];
+        var stressData = [];
+        
         var coffeeAvg = 0;
         var teaAvg = 0;
+        var workAvg = 0;
+        var stressAvg = 0;
+
         //var ateData = [];
         //var stressData = [];
 
@@ -110,12 +116,26 @@ class Graph
                 teaAvg = teaAvg + parseInt(that.singleRoutine[i].Quality)
 
             }
+            if(that.singleRoutine[i].SleepNotes == "Worked out")
+            {
+                workoutData.push(that.singleRoutine[i])
+                workAvg = workAvg + parseInt(that.singleRoutine[i].Quality)
+
+            }
+            if(that.singleRoutine[i].SleepNotes == "Stressful day")
+            {
+                stressData.push(that.singleRoutine[i])
+                stressAvg = stressAvg + parseInt(that.singleRoutine[i].Quality)
+
+            }
         }
 
         console.log(coffeeAvg)
         coffeeAvg = coffeeAvg/coffeeData.length;
         console.log(coffeeAvg)
         teaAvg = teaAvg/teaData.length;
+        workAvg = workAvg/workoutData.length;
+        stressAvg =  stressAvg/stressData.length;
 
 
         console.log(coffeeData)
@@ -128,10 +148,34 @@ class Graph
         
         let rectCoffee = view.append("rect")
                         .attr("x" , 50)
-                        .attr("y" , 300)
+                        .attr("y" , 370)
                         .attr("width" ,that.widthScale(coffeeAvg))
-                        .attr("height" , 50)
+                        .attr("height" , 30)
                         .style("fill" , "firebrick")
+                        .style("stroke-width" , "1px")
+                        .style("stroke" , "black")
+        let rectTea = view.append("rect")
+                        .attr("x" , 50)
+                        .attr("y" , 320)
+                        .attr("width" ,that.widthScale(teaAvg))
+                        .attr("height" , 30)
+                        .style("fill" , "steelblue")
+                        .style("stroke-width" , "1px")
+                        .style("stroke" , "black")
+       let rectWork = view.append("rect")
+                        .attr("x" , 50)
+                        .attr("y" , 270)
+                        .attr("width" ,that.widthScale(workAvg))
+                        .attr("height" , 30)
+                        .style("fill" , "green")
+                        .style("stroke-width" , "1px")
+                        .style("stroke" , "black")
+       let rectStress = view.append("rect")
+                        .attr("x" , 50)
+                        .attr("y" , 220)
+                        .attr("width" ,that.widthScale(stressAvg))
+                        .attr("height" , 30)
+                        .style("fill" , "orange")
                         .style("stroke-width" , "1px")
                         .style("stroke" , "black")
     }
