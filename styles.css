@@ -1,0 +1,104 @@
+
+
+.view {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+.bubble-chart {
+    height: 300px;
+}
+th {
+    font-weight: bold;
+    text-align: left;
+    font-family: sans-serif;
+  
+
+}
+
+tbody tr:hover {
+    background-color: #efefef;
+}
+
+#predictionTable tbody tr {
+    cursor: pointer;
+}
+
+tbody tr:hover {
+    background-color: #efefef;
+}
+.selected {
+    opacity: 1 !important;
+    stroke: black;
+    stroke-width: 5px;
+  }
+
+
+.sorting {
+    background: black;
+    color: white;
+}
+
+.sortable {
+    user-select: none;
+    border-radius: 3px;
+    cursor: pointer;
+    padding: 6px;
+}
+
+.sortable:hover {
+    background: #d1d1d1;
+}
+
+.sortable.sorting:hover {
+    background: #232323;
+}
+.party-text {
+    font-size: 15pt;
+    font: sans-serif;
+    font-style: bold;
+}
+
+circle {
+    fill: #d9d9d9;
+    stroke: gray;
+    opacity: 1;
+}
+
+.catLabel{
+    font-size: 13pt;
+    font-family: sans-serif;
+    font-weight: 600;
+    fill: gray;
+    opacity: 0;
+
+}
+
+.middle-line{
+    stroke: black;
+    stroke-width: .5;
+}
+.d3-tip {
+    line-height: 1;
+    padding: 6px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #fff;
+    border-radius: 4px;
+    font-size: 12px;
+  }
+
+  .info-text {
+    font-size: 6pt;
+    font: sans-serif;
+    font-style: bold;
+}
+
+.rect-info
+{
+
+    width: 100;
+    height: 100;
+    opacity: 0;
+}
+
+  
+    
