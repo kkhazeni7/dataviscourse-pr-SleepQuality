@@ -4,8 +4,9 @@ class Graph
     {
         this.sleepData = data;
 
-        this.singleRoutine = this.sleepData.filter(d => d.SleepNotes.split(":" , 1).length == 1)
-          console.log(this.singleRoutine)
+
+        // this.singleRoutine = this.sleepData.filter(d => d.SleepNotes.split(":" , 1).length == 1)
+        // console.log(this.singleRoutine)
 
         
          
@@ -76,13 +77,50 @@ class Graph
                                .style("font-family" , "sans-serif")
                                .style("font-weight" , 600)
     
-        this.drawRectangles(this.view)
+        //this.drawRectangles(this.view)
                                
-                               
+                 
+        this.drawPlot(this.view)
 
 
                          
            
+    }
+
+    drawPlot(view)
+    {
+
+        let xScale = d3.scaleLinear()
+                        .domain([0,0.5])
+                        .range([50,450])
+        let yScale = d3.scaleLinear()
+                        .domain([80,100])
+                        .range([400,100])
+        let that = this;
+
+
+        console.log(that.sleepData.filter(d => d.efficiency))
+
+        for(let i = 0; i < that.sleepData.length; i++)
+        {
+            view.append("circle")
+                        .data(that.sleepData)
+                        .attr("cx" ,xScale((that.sleepData[i].levels.summary.deep.minutes)/that.sleepData[i].minutesAsleep))
+                        .attr("cy" ,yScale(that.sleepData[i].efficiency))
+                        .attr("r" , 1)
+                        .style("fill" , "red")
+                        .style("stroke" , "black")
+        }
+        //this is for deep sleep percent
+        // let plots = view.append("circle")
+        //                 .data(that.sleepData)
+        //                 .attr("cx" , d => xScale((d.levels.summary.deep.minutes)/d.minutesAsleep))
+        //                 .attr("cy" , d => yScale(d.efficiency))
+        //                 .attr("r" , 1)
+        //                 .style("fill" , "red")
+        //                 .style("stroke" , "black")
+                    
+
     }
 
     drawRectangles(view)
@@ -130,16 +168,23 @@ class Graph
             }
         }
 
-        console.log(coffeeAvg)
+        
         coffeeAvg = coffeeAvg/coffeeData.length;
-        console.log(coffeeAvg)
+        console.log("Coffee Average Quality:  " + coffeeAvg)
+        console.log("Number of single days:  " + coffeeData.length)
         teaAvg = teaAvg/teaData.length;
+        console.log("Tea Average Quality:  " + teaAvg)
+        console.log("Number of single days:  " + teaData.length)
         workAvg = workAvg/workoutData.length;
+        console.log("Workout Average Quality:  " + workAvg)
+        console.log("Number of single days:  " + workoutData.length)
         stressAvg =  stressAvg/stressData.length;
+        console.log("Stress Average Quality:  " + stressAvg)
+        console.log("Number of single days:  " + stressData.length)
 
 
-        console.log(coffeeData)
-        console.log(teaData)
+        
+
         this.widthScale = d3.scaleLinear()
             .domain([0 , 100])
             .range([0, 400]);
