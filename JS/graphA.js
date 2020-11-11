@@ -8,6 +8,8 @@ class Graph
         // this.singleRoutine = this.sleepData.filter(d => d.SleepNotes.split(":" , 1).length == 1)
         // console.log(this.singleRoutine)
 
+        this.deepSleep = this.sleepData.map(d => d.deep)
+        console.log([d3.min(this.deepSleep) , d3.max(this.deepSleep)])
         
          
     }
@@ -19,13 +21,15 @@ class Graph
            .attr("width" , 500)
            .attr("height" , 500)
 
-
-
         this.xScale = d3.scaleLinear()
-                         .domain([0,100])
+                         .domain([200,600])
                          .range([50,475])
+        this.yScale = d3.scaleLinear()
+                         .domain([0,100])
+                         .range([400,125])
 
-        var xTicks = [0,25,50,75,100];
+        var xTicks = [200,300,400,500,600];
+        var yTicks = [0,25,50,75,100];
         this.view = d3.select("#chart-view")
                        .append("svg")
                        .classed("chart-svg" , true)
@@ -57,13 +61,24 @@ class Graph
                       .style("font-family" , "sans-serif")
                       .style("font-weight" , 600)
         }
+        for(let j = 0; j < yTicks.length; j++)
+        {
+            this.view.append("text")
+                      .attr("y" , this.yScale(yTicks[j]))
+                      .attr("x" , 25)
+                      .text(yTicks[j])
+                      .style("font-size", "10pt")
+                      .style("font-family" , "sans-serif")
+                      .style("font-weight" , 600)
+        }
+
 
         
         let labelX = this.view.append("text")
                                .classed("label" , true)
                                .attr("x" , 200)
                                .attr("y" , 450)
-                               .text("Sleep Quality")
+                               .text("Sleep Length")
                                .style("font-size", "10pt")
                                .style("font-family" , "sans-serif")
                                .style("font-weight" , 600)
@@ -72,7 +87,7 @@ class Graph
                                .attr("x" , 10)
                                .attr("y" , 250)
                                .attr("transform" , "rotate(90)")
-                               .text("Routine")
+                               .text("Sleep Score")
                                .style("font-size", "10pt")
                                .style("font-family" , "sans-serif")
                                .style("font-weight" , 600)
@@ -89,28 +104,60 @@ class Graph
 
     drawPlot(view)
     {
+        
 
-        let xScale = d3.scaleLinear()
-                        .domain([0,0.5])
-                        .range([50,450])
-        let yScale = d3.scaleLinear()
-                        .domain([80,100])
-                        .range([400,100])
         let that = this;
 
+        let xScale = d3.scaleLinear()
+                        .domain([d3.min(that.sleepData.map(d => d.Duration)),d3.max(that.sleepData.map(d => d.Duration))])
+                        .range([50,450])
+        let yScale = d3.scaleLinear()
+                        .domain([d3.min(that.sleepData.map(d => d.overall_score)),d3.max(that.sleepData.map(d => d.overall_score))])
+                        .range([400,125])
 
-        console.log(that.sleepData.filter(d => d.efficiency))
+
+        console.log([d3.min(that.sleepData.map(d => d.Duration)),d3.max(that.sleepData.map(d => d.Duration))])
+       
 
         for(let i = 0; i < that.sleepData.length; i++)
         {
             view.append("circle")
                         .data(that.sleepData)
-                        .attr("cx" ,xScale((that.sleepData[i].levels.summary.deep.minutes)/that.sleepData[i].minutesAsleep))
-                        .attr("cy" ,yScale(that.sleepData[i].efficiency))
-                        .attr("r" , 1)
+                        .attr("cx" ,xScale(parseInt(that.sleepData[i].Duration)))
+                        .attr("cy" ,yScale(parseInt(that.sleepData[i].overall_score)))
+                        .attr("r" , 4)
                         .style("fill" , "red")
                         .style("stroke" , "black")
+                     
+            // view.append("circle")
+            //             .data(that.sleepData)
+            //             .attr("cx" ,xScale((that.sleepData[i].light)/that.sleepData[i].minutesAsleep))
+            //             .attr("cy" ,yScale(that.sleepData[i].overall_score))
+            //             .attr("r" , 1.5)
+            //             .style("fill" , "blue")
+            //             .style("stroke" , "black")
+            //  view.append("circle")
+            //             .data(that.sleepData)
+            //             .attr("cx" ,xScale((that.sleepData[i].wake)/that.sleepData[i].minutesAsleep))
+            //             .attr("cy" ,yScale(that.sleepData[i].overall_score))
+            //             .attr("r" , 1.5)
+            //             .style("fill" , "green")
+            //             .style("stroke" , "black")
+            // view.append("circle")
+            //             .data(that.sleepData)
+            //             .attr("cx" ,xScale((that.sleepData[i].rem)/that.sleepData[i].minutesAsleep))
+            //             .attr("cy" ,yScale(that.sleepData[i].overall_score))
+            //             .attr("r" , 1.5)
+            //             .style("fill" , "yellow")
+            //             .style("stroke" , "black")
         }
+
+        d3.selectAll("circle").data(that.sleepData)
+        .on("click" , function(d , i){
+            console.log(d)
+            console.log(i)
+            that.drawPie(d);
+        } )
         //this is for deep sleep percent
         // let plots = view.append("circle")
         //                 .data(that.sleepData)
@@ -123,6 +170,41 @@ class Graph
 
     }
 
+    drawPie(d)
+    {
+        let that = this;
+        var vals = [{stage: "Deep" , value: d.deep/d.minutesAsleep},
+                    {stage: "Light" , value: d.light/d.minutesAsleep},
+                    {stage: "Wake" , value: d.wake/d.minutesAsleep},
+                    {stage: "Rem" , value: d.rem/d.minutesAsleep}];
+        
+        var radius = 200;
+        var pie = d3.select("#chart")
+                     .select("#pie-chart")
+                      
+
+
+        
+        var color = d3.scaleOrdinal(d3.schemeDark2)
+        var data = d3.pie().sort(null).value(function(d){return d.value;})(vals);
+        console.log(data)
+        var segments = d3.arc()
+                         .innerRadius(0)
+                         .outerRadius(200)
+                         .padAngle(.05)
+                         .padRadius(50);
+        var sections = pie.append("svg").attr("width", 500).attr("height", 500).append("g").attr("transform" ,"translate(250,250)")
+        .selectAll("path").data(data);
+        sections.enter().append("path").attr("d" , segments).attr("fill" , function(d) {return color(d.data.value)})
+
+        var content = pie.select("g").selectAll("text").data(data);
+        content.enter().append("text").each(function(d){
+            var center = segments.centroid(d);
+            d3.select(this).attr("x" , center[0])
+            .attr("y", center[1])
+            .text(d.data.stage)
+        })
+    }
     drawRectangles(view)
     {
 
