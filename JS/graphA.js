@@ -3,104 +3,266 @@ class Graph
     constructor(data)
     {
         this.sleepData = data;
+        this.p1Data = data[0]
+        this.p2Data = data[1]
+        this.p3Data = data[2]
+        this.p4Data = data[3]
+        this.p5Data = data[4]
+        this.p6Data = data[5]
+        this.p7Data = data[6]        
+        this.p8Data = data[7]
+
+
 
 
         // this.singleRoutine = this.sleepData.filter(d => d.SleepNotes.split(":" , 1).length == 1)
         // console.log(this.singleRoutine)
 
-        this.deepSleep = this.sleepData.map(d => d.deep)
-        console.log([d3.min(this.deepSleep) , d3.max(this.deepSleep)])
+        // this.deepSleep = this.sleepData.map(d => d.deep)
+        // console.log([d3.min(this.deepSleep) , d3.max(this.deepSleep)])
         
          
     }
 
     drawGraph()
     {
-        d3.select("#chart")
-           .select("#chart-view")
-           .attr("width" , 500)
-           .attr("height" , 500)
 
-        this.xScale = d3.scaleLinear()
-                         .domain([200,600])
-                         .range([50,475])
-        this.yScale = d3.scaleLinear()
-                         .domain([0,100])
-                         .range([400,125])
-
-        var xTicks = [200,300,400,500,600];
-        var yTicks = [0,25,50,75,100];
-        this.view = d3.select("#chart-view")
+        
+         d3.select("#chart")
+            .select("#chart-view")
+            .attr("width" , 250)
+            .attr("height" , 1600)
+        let that = this;
+        that.view = d3.select("#chart-view")
                        .append("svg")
                        .classed("chart-svg" , true)
-                       .attr("width" , 500)
-                       .attr("height" , 500)
-        
-        let lineX = this.view.append("line")
+                       .attr("width" , 600)
+                       .attr("height" , 1800)
+        var yTicks = [0,25,50,75,100]
+
+        for(let i = 0; i < 8; i++)
+        {
+            if(i < 4)
+            {
+            var yLoc = (i + 1) * 200;
+            var currPerson = that.sleepData[i]
+            this.svgChart = that.view.append("g")
+                                .attr("class", "p_chart"+(i+1))
+                                .attr("width" , 250)
+                                .attr("height" ,250 )
+                                .attr("x",20)
+                                .attr("y",yLoc - 100)
+                                
+                                
+
+           
+            
+            //var dataObject = new Date();
+            var date = currPerson.map(d => d.dateOfSleep)
+            var quality = currPerson.map(d => d.overall_score)
+            console.log(quality)
+            var min_max = d3.extent(quality)
+            //console.log(min_max)
+            //console.log(Date.parse(date[0]))
+            //console.log(Date.parse(date[10]))
+            this.xScale = d3.scaleLinear()
+                        .domain([new Date(Date.parse(date[0])), new Date(Date.parse(date[date.length - 1]))])
+                        .range([50,200])
+            this.yScale = d3.scaleLinear()
+                        .domain([0,100])
+                        .range([yLoc -100, yLoc - 190])
+           that.svgChart.append("text")
+                        .attr("x" , yLoc - 875)
+                        .attr("y" , 25)
+                        .style("stroke" , "black")
+                        .style("font-size", "9pt")
+                        .attr("transform" , "rotate(270)")
+                        //.attr("transform" , )
+                        
+                        .text("Quality")
+
+           for(let j = 0; j < yTicks.length; j++)
+            {
+                that.svgChart.append("text")
+                              .attr("x" ,45)
+                              .attr("y", that.yScale(yTicks[j]))
+                              .style("stroke" , "red")
+                              .style("font-size", "9pt")
+                              .style("text-anchor" , "end")
+                              .text(yTicks[j])
+                }
+            let lineX = that.view.select(".p_chart"+(i+1)).append("line")
                          .attr("x1" , 50)
-                         .attr("y1" ,400)
+                         .attr("y1" ,yLoc-100)
+                         .attr("x2" , 250)
+                         .attr("y2" , yLoc-100)
+                         .style("stroke-width", 2)
+                         .style("stroke" , "black")
+                   
+            let lineY = that.view.select(".p_chart"+(i+1)).append("line")
+                         .attr("x1" , 50)
+                         .attr("y1" ,yLoc-100)
                          .attr("x2" , 50)
-                         .attr("y2" , 100)
-                         .attr("stroke-wdith", 2)
-                         .attr("stroke" , "black")
-        let lineY = this.view.append("line")
-                         .attr("x1" , 50)
-                         .attr("y1" ,400)
-                         .attr("x2" , 600)
-                         .attr("y2" , 400)
-                         .attr("stroke-wdith", 2)
-                         .attr("stroke" , "black")
+                         .attr("y2" , yLoc - 200)
+                         .style("stroke-width", 2)
+                         .style("stroke" , "black")
+            }
+            if(i >= 4)
+            {
+            var yLoc = (i -3) * 200;
+            var currPerson = that.sleepData[i]
+            this.svgChart = that.view.append("g")
+                                .attr("class", "p_chart"+(i+1))
+                                .attr("width" , 250)
+                                .attr("height" ,250 )
+                                .attr("x", 300)
+                                .attr("y",yLoc - 100)
+                                
+
+            
+            //var dataObject = new Date();
+            var date = currPerson.map(d => d.dateOfSleep)
+            var quality = currPerson.map(d => d.overall_score)
+            console.log(quality)
+            var min_max = d3.extent(quality)
+            //console.log(min_max)
+            //console.log(Date.parse(date[0]))
+            //console.log(Date.parse(date[10]))
+            this.xScale = d3.scaleLinear()
+                        .domain([new Date(Date.parse(date[0])), new Date(Date.parse(date[date.length - 1]))])
+                        .range([50,200])
+            this.yScale = d3.scaleLinear()
+                        .domain([0,100])
+                        .range([yLoc -100, yLoc - 190])
+            for(let j = 0; j < yTicks.length; j++)
+            {
+                that.svgChart.append("text")
+                              .attr("x" ,295)
+                              .attr("y", that.yScale(yTicks[j]))
+                               .style("stroke" , "red")
+                                .style("font-size", "9pt")
+                                .style("text-anchor" , "end")
+                                .text(yTicks[j])
+                            }
+            
+            let lineX = that.view.select(".p_chart"+(i+1)).append("line")
+                         .attr("x1" , 300)
+                         .attr("y1" ,yLoc-100)
+                         .attr("x2" , 550)
+                         .attr("y2" , yLoc-100)
+                         .style("stroke-width", 2)
+                         .style("stroke" , "black")
+                   
+            let lineY = that.view.select(".p_chart"+(i+1)).append("line")
+                         .attr("x1" , 300)
+                         .attr("y1" ,yLoc-100)
+                         .attr("x2" , 300)
+                         .attr("y2" , yLoc - 200)
+                         .style("stroke-width", 2)
+                         .style("stroke" , "black")
+            }
+           
+            //that.view.exit()
+           
+                         
+
+           
+            
+            // console.log("DATE:" + date[0])
+            // console.log("Scaled:" + this.y(new Date(Date.parse(date[10]))))
+
+            // this.xScale = d3.scaleLinear()
+            //              .domain([200,600])
+            //              .range([50,475])
+            // this.yScale = d3.scaleLinear()
+            //               .domain([0,100])
+            //               .range([400,125])
+
+        }
         
-        for(let j = 0; j < xTicks.length; j++)
-        {
-            this.view.append("text")
-                      .attr("x" , this.xScale(xTicks[j]))
-                      .attr("y" , 420)
-                      .text(xTicks[j])
-                      .style("font-size", "10pt")
-                      .style("font-family" , "sans-serif")
-                      .style("font-weight" , 600)
-        }
-        for(let j = 0; j < yTicks.length; j++)
-        {
-            this.view.append("text")
-                      .attr("y" , this.yScale(yTicks[j]))
-                      .attr("x" , 25)
-                      .text(yTicks[j])
-                      .style("font-size", "10pt")
-                      .style("font-family" , "sans-serif")
-                      .style("font-weight" , 600)
-        }
+        
+
+        // this.xScale = d3.scaleLinear()
+        //                  .domain([200,600])
+        //                  .range([50,475])
+        //  this.yScale = d3.scaleLinear()
+        //                   .domain([0,100])
+        //                   .range([400,125])
+
+        // var xTicks = [200,300,400,500,600];
+        // var yTicks = [0,25,50,75,100];
+        // this.view = d3.select("#chart-view")
+        //                .append("svg")
+        //                .classed("chart-svg" , true)
+        //                .attr("width" , 500)
+        //                .attr("height" , 500)
+        
+        // let lineX = this.view.append("line")
+        //                  .attr("x1" , 50)
+        //                  .attr("y1" ,400)
+        //                  .attr("x2" , 50)
+        //                  .attr("y2" , 100)
+        //                  .attr("stroke-wdith", 2)
+        //                  .attr("stroke" , "black")
+        // let lineY = this.view.append("line")
+        //                  .attr("x1" , 50)
+        //                  .attr("y1" ,400)
+        //                  .attr("x2" , 600)
+        //                  .attr("y2" , 400)
+        //                  .attr("stroke-wdith", 2)
+        //                  .attr("stroke" , "black")
+        
+        // for(let j = 0; j < xTicks.length; j++)
+        // {
+        //     this.view.append("text")
+        //               .attr("x" , this.xScale(xTicks[j]))
+        //               .attr("y" , 420)
+        //               .text(xTicks[j])
+        //               .style("font-size", "10pt")
+        //               .style("font-family" , "sans-serif")
+        //               .style("font-weight" , 600)
+        // }
+        // for(let j = 0; j < yTicks.length; j++)
+        // {
+        //     this.view.append("text")
+        //               .attr("y" , this.yScale(yTicks[j]))
+        //               .attr("x" , 25)
+        //               .text(yTicks[j])
+        //               .style("font-size", "10pt")
+        //               .style("font-family" , "sans-serif")
+        //               .style("font-weight" , 600)
+        // }
 
 
         
-        let labelX = this.view.append("text")
-                               .classed("label" , true)
-                               .attr("x" , 200)
-                               .attr("y" , 450)
-                               .text("Sleep Length")
-                               .style("font-size", "10pt")
-                               .style("font-family" , "sans-serif")
-                               .style("font-weight" , 600)
-        let labelY = this.view.append("text")
-                               .classed("label" , true)
-                               .attr("x" , 10)
-                               .attr("y" , 250)
-                               .attr("transform" , "rotate(90)")
-                               .text("Sleep Score")
-                               .style("font-size", "10pt")
-                               .style("font-family" , "sans-serif")
-                               .style("font-weight" , 600)
+        // let labelX = this.view.append("text")
+        //                        .classed("label" , true)
+        //                        .attr("x" , 200)
+        //                        .attr("y" , 450)
+        //                        .text("Sleep Length")
+        //                        .style("font-size", "10pt")
+        //                        .style("font-family" , "sans-serif")
+        //                        .style("font-weight" , 600)
+        // let labelY = this.view.append("text")
+        //                        .classed("label" , true)
+        //                        .attr("x" , 10)
+        //                        .attr("y" , 250)
+        //                        .attr("transform" , "rotate(90)")
+        //                        .text("Sleep Score")
+        //                        .style("font-size", "10pt")
+        //                        .style("font-family" , "sans-serif")
+        //                        .style("font-weight" , 600)
     
         //this.drawRectangles(this.view)
                                
                  
-        this.drawPlot(this.view)
+       // this.drawPlot(this.view)
 
 
                          
            
     }
+    
 
     drawPlot(view)
     {

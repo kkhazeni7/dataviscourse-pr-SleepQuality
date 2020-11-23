@@ -11,7 +11,12 @@ Promise.all([
    
 ])
 .then(function(data) {
-   console.log(data)
+   
+    let sleepData = data;
+    //console.log(sleepData);
+    let graph = new Graph(sleepData);
+    graph.drawGraph()
+
 })
 
     
