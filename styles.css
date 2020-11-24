@@ -15,10 +15,6 @@ th {
 
 }
 
-tbody tr:hover {
-    background-color: #efefef;
-}
-
 #predictionTable tbody tr {
     cursor: pointer;
 }
