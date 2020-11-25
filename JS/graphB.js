@@ -243,6 +243,10 @@ class Bar
         let xLocations = dateRange
         let dataRange = data.slice((data.length-1) - 14, data.length-1)
         console.log(dataRange)
+        console.log(dateRange)
+
+     
+   
         //first time doing rectangles
         if(iter < 1)
         {
@@ -255,8 +259,8 @@ class Bar
                 {
                     d3.select("#bar-chart")
                     .select(".bar-svg")
-                    .append("rect").attr("class" , "rect-"+j)
-                    .attr("x", that.xScale(new Date(Date.parse(dataRange[j].dateOfSleep))))
+                    .append("rect").attr("class" , "rect-"+j+""+i)
+                    .attr("x", that.xScale(new Date(Date.parse(xLocations[j]))))
                     .attr("y", that.yScale(dataRange[j].light))
                     .attr("width", 25)
                     .attr("height", 400 - that.yScale(dataRange[j].light))
@@ -269,8 +273,8 @@ class Bar
                 {
                     d3.select("#bar-chart")
                     .select(".bar-svg")
-                    .append("rect").attr("class" , "rect-"+j)
-                    .attr("x",that.xScale(new Date(Date.parse(dataRange[j].dateOfSleep))))
+                    .append("rect").attr("class" , "rect-"+j+""+i)
+                    .attr("x",that.xScale(new Date(Date.parse(xLocations[j]))))
                     .attr("y",that.yScale(dataRange[j].light) - (400 -that.yScale(dataRange[j].rem)))
                     .attr("width", 25)
                     .attr("height", 400 - that.yScale(dataRange[j].rem))
@@ -282,8 +286,8 @@ class Bar
                 {
                     d3.select("#bar-chart")
                     .select(".bar-svg")
-                    .append("rect").attr("class" , "rect-"+j)
-                    .attr("x", that.xScale(new Date(Date.parse(dataRange[j].dateOfSleep))))
+                    .append("rect").attr("class" , "rect-"+j+""+i)
+                    .attr("x", that.xScale(new Date(Date.parse(xLocations[j]))))
                     .attr("y",that.yScale(dataRange[j].light) - (400 -that.yScale(dataRange[j].rem)) - (400 -that.yScale(dataRange[j].deep)))
                     .attr("width", 25)
                     .attr("height", 400 - that.yScale(dataRange[j].deep))
@@ -307,8 +311,8 @@ class Bar
                 {
                     d3.select("#bar-chart")
                     .select(".bar-svg")
-                    .select(".rect-"+j)
-                    .attr("x", that.xScale(new Date(Date.parse(dataRange[j].dateOfSleep))))
+                    .select(".rect-"+j+""+i)
+                    .attr("x", that.xScale(new Date(Date.parse(xLocations[j]))))
                     .attr("y", that.yScale(dataRange[j].light))
                     .attr("width", 25)
                     .attr("height", 400 - that.yScale(dataRange[j].light))
@@ -320,8 +324,8 @@ class Bar
                 {
                     d3.select("#bar-chart")
                     .select(".bar-svg")
-                    .select(".rect-"+j)
-                    .attr("x",that.xScale(new Date(Date.parse(dataRange[j].dateOfSleep))))
+                    .select(".rect-"+j+""+i)
+                    .attr("x",that.xScale(new Date(Date.parse(xLocations[j]))))
                     .attr("y",that.yScale(dataRange[j].light) - (400 -that.yScale(dataRange[j].rem)))
                     .attr("width", 25)
                     .attr("height", 400 - that.yScale(dataRange[j].rem))
@@ -332,8 +336,8 @@ class Bar
                 {
                     d3.select("#bar-chart")
                     .select(".bar-svg")
-                    .select(".rect-"+j)
-                    .attr("x", that.xScale(new Date(Date.parse(dataRange[j].dateOfSleep))))
+                    .select(".rect-"+j+""+i)
+                    .attr("x", that.xScale(new Date(Date.parse(xLocations[j]))))
                     .attr("y",that.yScale(dataRange[j].light) - (400 -that.yScale(dataRange[j].rem)) - (400 -that.yScale(dataRange[j].deep)))
                     .attr("width", 25)
                     .attr("height", 400 - that.yScale(dataRange[j].deep))
