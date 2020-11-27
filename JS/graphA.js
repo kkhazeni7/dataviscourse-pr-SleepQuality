@@ -157,7 +157,7 @@ class Graph
                                         }
                                         else{
                                         that.barCounter = that.barCounter + 1
-                                        that.barChart = new Bar(d, i)
+                                        that.barChart = new Bar(d,that.sleepData, i)
                                         }
                                         
                                         
@@ -264,7 +264,7 @@ class Graph
                                         }
                                         else{
                                         that.barCounter = that.barCounter + 1
-                                        that.barChart = new Bar(d, i)
+                                        that.barChart = new Bar(d,that.sleepData, i)
                                         }
                                         
                                     })
