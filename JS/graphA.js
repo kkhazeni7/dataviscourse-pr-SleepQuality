@@ -142,12 +142,12 @@ class Graph
                                     )
                                     .on("mouseover", function(d)
                                     {
-                                        that.view.select(".p_chart"+(i+1)).select("path")
+                                        that.view.select(".p_chart"+(i+1)).select("path").transition().duration(250)
                                         .attr("stroke" , "red")
                                     })
                                     .on("mouseout", function(d)
                                     {
-                                        that.view.select(".p_chart"+(i+1)).select("path")
+                                        that.view.select(".p_chart"+(i+1)).select("path").transition().duration(250)
                                         .attr("stroke" , "steelblue")
                                         
                                     })
@@ -238,7 +238,7 @@ class Graph
                          .attr("y2" , yLoc - 200)
                          .style("stroke-width", 2)
                          .style("stroke" , "black")
-            console.log("about to draw path")
+            //console.log("about to draw path")
             let path = that.view.select(".p_chart"+(i+1)).append("path")
                                     .datum(currPerson)
                                     .attr("fill" , "none")
@@ -250,12 +250,12 @@ class Graph
                                     )
                                     .on("mouseover", function(d)
                                     {
-                                        that.view.select(".p_chart"+(i+1)).select("path")
+                                        that.view.select(".p_chart"+(i+1)).select("path").transition().duration(250)
                                         .attr("stroke" , "red")
                                     })
                                     .on("mouseout", function(d)
                                     {
-                                        that.view.select(".p_chart"+(i+1)).select("path")
+                                        that.view.select(".p_chart"+(i+1)).select("path").transition().duration(250)
                                         .attr("stroke" , "steelblue")
                                     })
                                     .on("click" , function(d)

@@ -95,5 +95,8 @@ circle {
     opacity: 0;
 }
 
+#infoBox {
+    border: solid;
+}
   
     
