@@ -430,8 +430,8 @@ class Bar
             dataRange = data.slice(that.parsedVal, that.parsedVal + 14)
         }
        
-
-
+        
+        console.log(d3.time.format("%m/%d/%Y").parse(dataRange[0].dateOfSleep))
      
         this.greaterArr = []
         this.lesserArr = []
@@ -826,15 +826,21 @@ class Bar
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"0")
+                .transition()
+                .duration(500)
                 .style("fill", "red")
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"1")
+                .transition()
+                .duration(500)
                 .style("opacity",.67)
                 .style("fill", "red")
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"2")
+                .transition()
+                .duration(500)
                 .style("fill", "red")
                 
             }
@@ -848,15 +854,21 @@ class Bar
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"0")
+                .transition()
+                .duration(500)
                 .style("fill", "steelblue")
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"1")
+                .transition()
+                .duration(500)
                 .style("fill", "skyblue")
                 .style("opacity",.8)
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"2")
+                .transition()
+                .duration(500)
                 .style("fill", "skyblue")
                 
             }
@@ -875,15 +887,21 @@ class Bar
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"0")
+                .transition()
+                .duration(500)
                 .style("fill", "red")
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"1")
+                .transition()
+                .duration(500)
                 .style("opacity",.67)
                 .style("fill", "red")
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"2")
+                .transition()
+                .duration(500)
                 .style("fill", "red")
                 
             }
@@ -897,15 +915,21 @@ class Bar
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"0")
+                .transition()
+                .duration(500)
                 .style("fill", "steelblue")
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"1")
+                .transition()
+                .duration(500)
                 .style("fill", "skyblue")
                 .style("opacity",.8)
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"2")
+                .transition()
+                .duration(500)
                 .style("fill", "skyblue")
                 
             }
