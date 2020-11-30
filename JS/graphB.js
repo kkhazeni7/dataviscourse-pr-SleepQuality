@@ -430,8 +430,6 @@ class Bar
             dataRange = data.slice(that.parsedVal, that.parsedVal + 14)
         }
        
-        
-        console.log(d3.time.format("%m/%d/%Y").parse(dataRange[0].dateOfSleep))
      
         this.greaterArr = []
         this.lesserArr = []
