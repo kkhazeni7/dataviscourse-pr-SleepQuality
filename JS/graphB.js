@@ -299,6 +299,7 @@ class Bar
         else
         {
             xTicks = x.slice(that.parsedVal, that.parsedVal + 14)
+            console.log(xTicks)
             this.twoWeeks = that.currPerson.slice(that.parsedVal, that.parsedVal + 14)
 
 
@@ -376,6 +377,14 @@ class Bar
         {
             d3.select("#bar-chart")
                 .select(".bar-svg")
+                .select(".x-text"+j)
+                .text(xTicks[j])    
+        }
+
+        for(let j = 0; j < xTicks.length; j++)
+        {
+            d3.select("#bar-chart")
+                .select(".bar-svg")
                 .select(".y-text"+j)
                 .text(yTicks[j])    
         }
@@ -411,7 +420,6 @@ class Bar
         console.log(newI)
 
         d3.select("#bar-chart").select("header").select(".personText").text("Person " + (that.numOfPerson+1)+ ": Stages of Sleep")
-        d3.select("#bar-chart").select("span").select("#dataset").select("option"+(that.numOfPerson+1)).attr("selected", true)
         that.drawBar(1)
         that.story(1)
     }
