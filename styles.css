@@ -1,5 +1,4 @@
 
-
 .view {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -96,5 +95,8 @@ circle {
     opacity: 0;
 }
 
+#infoBox {
+    border: solid;
+}
   
     

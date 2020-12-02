@@ -1,5 +1,9 @@
 class Bar
 {
+    /*
+    Constructor for vertical bar chart, initializes several different variables used 
+    throughout the creation of the chart.
+    */
     constructor(data,overalldata ,i)
     {
         this.currPerson = data
@@ -8,7 +12,8 @@ class Bar
         console.log(i)
         this.textOnChart = false
         this.parsedVal = -1
-        
+        this.weekdays = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
+
         //this array will be used to hold the values for the 14 day span
         //due to scaling issues, the data with missing days causes the ticks and bars to over lap
         //by putting in this array for scaling the position, we can still put the text we want
@@ -30,16 +35,15 @@ class Bar
             "11/23/19",
         ]
         this.drawBar(0)
-
-        
-        
-       
-      
         
     }
 
+    /**
+     * Main method that initializes the view, svg, axes, and barchart for right side of visualization.
+     */  
     drawBar(iter)
     {
+        //First time populating visualization
         if(iter < 1)
         {
         d3.select("#chart")
@@ -61,19 +65,11 @@ class Bar
         //to 14 days(2 weeks) prior, hence the x.length - 14
         var x = that.currPerson.map(d => d.dateOfSleep)
         var xTicks = []
+
         if(that.parsedVal == -1)
-        {
             xTicks = x.slice((x.length - 1) - 14, x.length - 1)
-        }
         else
-        {
             xTicks = x.slice(that.parsedVal, that.parsedVal + 14)
-
-        }
-
-        
-        
-
 
         this.label  = d3.select("#bar-chart")
                          .append("header")
@@ -88,12 +84,9 @@ class Bar
                             .append("h5")
                             .text("Select Person and/or Start Date:")
 
-
-
-        //Add the drop down menu
+        //Add the drop down menu for person selector
         this.dropdown = d3.select("#bar-chart")
         .append("span")
-        // .append("label").text("People")
         
         d3.select("#bar-chart")
         .select("span")
@@ -101,19 +94,138 @@ class Bar
         .attr("class" , "btn btn-primary dropdown-toggle")
         .attr("id", "dataset")
 
-        //Add the drop down menu
+        //Add the drop down menu for date selector
         this.dropdown = d3.select("#bar-chart")
         .append("span")
-        // .append("label").text("People")
-        
+
         d3.select("#bar-chart")
         .select("span")
         .append("select")
         .attr("class" , "btn btn-primary dropdown-toggle")
-
         .attr("id", "datasetB")
         .style("margin-left", "5px")
         
+        //Fun Facts button
+        d3.select('#bar-chart')
+            .select("span")
+            .append("button")
+            .attr("class", "btn btn-primary")
+            .attr("id", "funFactsButton")
+            .style("margin-left", "5px")
+            .text("Fun Facts")    
+
+        //Hide Facts button
+        d3.select('#bar-chart')
+        .select("span")
+        .append("button")
+        .attr("class", "btn btn-danger")
+        .attr('id', '#hideButton')
+        .style("display", "none")
+        .style("margin-top", "5px")
+        .text("Hide Facts")
+        .on('click', function(d){
+            if(document.getElementById('#hideButton').style.display == 'block')
+            {
+                d3.select('.bar-svg')
+                .transition().duration(500)
+                .attr('height', 1800)
+                
+                d3.select('.extremeStory').style('display', 'none')
+                document.getElementById('#hideButton').style.display = 'none'
+                d3.select(".extremeStory").selectAll('text').remove()
+            }
+        })
+        
+        //Click off on chart-view (left side) should result in fun facts hiding and resetting
+        d3.select('#chart-view').on('click', function(d){
+            if(document.getElementById('#hideButton').style.display == 'block')
+            {
+                d3.select('.bar-svg')
+                .transition().duration(500)
+                .attr('height', 1800)
+                
+                d3.select('.extremeStory')
+                .style('display', 'none')
+
+                document.getElementById('#hideButton').style.display = 'none'
+                d3.select(".extremeStory").selectAll('text').remove()
+            }
+        })
+
+        //SVG for fun facts
+        d3.select('#bar-chart').append("svg").attr('class', 'extremeStory')
+        .attr('y', 200)
+        .attr('width', 500).attr('height', 150)
+        .style('background-color', 'lightgrey').style('opacity', 1).style('stroke-linejoin', "round").style('display', 'none').style("margin-top", "10px")
+
+        //Adding facts button
+        d3.select('#bar-chart')
+        .select("#funFactsButton")
+        .text("Fun Facts")
+        .on('click', function(d) {
+            if(document.getElementById('#hideButton').style.display == 'block')
+            {
+                return
+            }
+            let currentData = that.allData[that.numOfPerson]
+            var dates = currentData.map(d => d.dateOfSleep)
+            var scores = currentData.map(d => d.overall_score)
+            let nameOfDays = []
+            for(let i = 0; i < dates.length; i++)
+            {
+                let numOfDay = new Date(Date.parse(dates[i])).getDay()
+                let dayOfWeek = that.weekdays[numOfDay]
+                nameOfDays.push(dayOfWeek)
+                
+            }
+            let dayScore = parseInt(0)
+            let counter = parseInt(0)
+            var dict = {};
+
+            for(let j = 0; j < that.weekdays.length; j++)
+            {
+                for(let i = 0; i < nameOfDays.length; i++)
+                {
+                    if(nameOfDays[i] == that.weekdays[j])
+                    {
+                        dayScore = parseInt(dayScore) + parseInt(scores[i])
+                        counter++
+                    }
+                    
+                }
+                dict[""+that.weekdays[j]] = (dayScore/counter)
+
+                counter = parseInt(0)
+                dayScore = parseInt(0)
+            }
+
+            var bestDay = Object.keys(dict).reduce((a, b) => dict[a] > dict[b] ? a : b);
+            var worstDay = Object.keys(dict).reduce((a, b) => dict[a] < dict[b] ? a : b);
+            console.log(document.getElementById('#hideButton').style.display)
+            if(document.getElementById('#hideButton').style.display == 'none')
+            {
+                d3.select('.bar-svg')
+                .transition().duration(500)
+                .attr('height', 0)
+
+                document.getElementById('#hideButton').style.display = 'block'
+            }
+
+            d3.select('#bar-chart').select('.extremeStory').style('display', 'block').append('text').attr('x', 5).attr('y', 20).text('Fun Facts: ').style('stroke', 'black')
+
+            d3.select('#bar-chart').select('.extremeStory').append('text').attr('x', 10).attr('y', 45)
+            .text("Person "+ (parseInt(that.numOfPerson)+parseInt(1)) + " averaged the best quality of sleep on " + bestDay + "s.").style('stroke', 'black')
+            
+            d3.select('#bar-chart').select('.extremeStory').append('text').attr('x', 10).attr('y', 65)
+            .text("Their average quality of sleep on " + bestDay + "'s is " + Number.parseFloat(dict[bestDay]).toFixed(2) + ".").style('stroke', 'black')
+
+            d3.select('#bar-chart').select('.extremeStory').append('text').attr('x', 10).attr('y', 90)
+            .text("Person "+ (parseInt(that.numOfPerson)+parseInt(1)) + " averaged the worst quality of sleep on " + worstDay + "s.").style('stroke', 'black')
+
+            d3.select('#bar-chart').select('.extremeStory').append('text').attr('x', 10).attr('y', 110)
+            .text("Their average quality of sleep on " + worstDay + "'s is " + Number.parseFloat(dict[worstDay]).toFixed(2) + ".").style('stroke', 'black')
+
+        })
 
         for(let j = 0; j < (that.currPerson.length-1) -14; j++)
         {
@@ -156,10 +268,17 @@ class Bar
         .select("#dataset")
         .on("change" , function()
         {
+            if(document.getElementById('#hideButton').style.display == 'block')
+            {
+                d3.select('.bar-svg')
+                .transition().duration(500)
+                .attr('height', 1800)
+                
+                d3.select('.extremeStory').style('display', 'none')
+                document.getElementById('#hideButton').style.display = 'none'
+                d3.select(".extremeStory").selectAll('text').remove()
+            }
             let dataFile = document.getElementById("dataset").value;
-            //console.log(parseInt(dataFile) + 1)
-            //console.log(that.currPerson[dataFile])
-            //console.log(that.currPerson[1])
             that.updateHeaderData(that.allData[dataFile], parseInt(dataFile))
         })
 
@@ -168,6 +287,16 @@ class Bar
         .select("#datasetB")
         .on("change" , function()
         {
+            if(document.getElementById('#hideButton').style.display == 'block')
+            {
+                d3.select('.bar-svg')
+                .transition().duration(500)
+                .attr('height', 1800)
+                
+                d3.select('.extremeStory').style('display', 'none')
+                document.getElementById('#hideButton').style.display = 'none'
+                d3.select(".extremeStory").selectAll('text').remove()
+            }
             let dataFile = document.getElementById("datasetB").value;
             console.log(dataFile)
 
@@ -177,23 +306,7 @@ class Bar
 
             that.drawBar(1)
             that.drawRectangles(that.currPerson, xTicks, 1)
-            //console.log(parseInt(dataFile) + 1)
-            //console.log(that.currPerson[dataFile])
-            //console.log(that.currPerson[1])
-            //that.updateHeaderData(that.allData[dataFile], parseInt(dataFile))
         })
-
-
-        
-    //     <span>
-    //   <label>Dataset:</label>
-    //   <select id="dataset" onchange="changeData()">
-    //     <option value="covid_us">The US</option>
-    //     <option selected value="covid_utah">Utah</option>
-    //     <option value="covid_ca">California</option>
-    //     <option value="covid_ny">New York</option>
-    //   </select>
-    // </span>
 
         this.bar = d3.select("#bar-chart")
                    .append("svg")
@@ -202,21 +315,30 @@ class Bar
                    .attr("height" , 1800)
 
         d3.select("#bar-chart")
+            .select(".bar-svg")
+            .append("text")
+            .style('stroke', 'black')
+            .attr('x', -260)
+            .attr('y', 15)
+            .attr("transform", "rotate(-90)")
+            .text('Time (Hours)')
+
+        d3.select("#bar-chart")
         .select(".bar-svg")
         .append("text")
         .attr("class" , "greaterLabel")
-        .attr("x" , 240)
+        .attr("x" , 255)
         .attr("y", 475)
         .style("stroke" , "black")
         .style("font-size", "10pt")
-        .text("Number of Nights with > 75% Sleep Quality: ")
+        .text("Number of Nights with > 75% Sleep Quality:  ")
         d3.select("#bar-chart")
         .select(".bar-svg")
         .append("text")
         .attr("class" , "Greater75")
-        .attr("x" , 500)
+        .attr("x" , 520)
         .attr("y", 475)
-        .style("stroke" , "steelblue")
+        .style("stroke" , "red")
         .style("font-size", "10pt")
         .style("opacity", 0)
         .text("40")
@@ -225,18 +347,18 @@ class Bar
         .select(".bar-svg")
         .append("text")
         .attr("class" , "lesserLabel")
-        .attr("x" , 240)
+        .attr("x" , 255)
         .attr("y", 500)
         .style("stroke" , "black")
         .style("font-size", "10pt")
-        .text("Number of Nights with < 75% Sleep Quality: ")
+        .text("Number of Nights with < 75% Sleep Quality:  ")
         d3.select("#bar-chart")
         .select(".bar-svg")
         .append("text")
         .attr("class" , "Less75")
-        .attr("x" , 500)
+        .attr("x" , 520)
         .attr("y", 500)
-        .style("stroke" , "steelblue")
+        .style("stroke" , "red")
         .style("font-size", "10pt")
         .style("opacity", 0)
         .text("40")
@@ -245,9 +367,9 @@ class Bar
         let lineX = d3.select("#bar-chart")
                     .select(".bar-svg")
                     .append("line")
-                   .attr("x1" , 50)
+                   .attr("x1" , 65)
                    .attr("y1" ,400)
-                   .attr("x2" , 640)
+                   .attr("x2" , 655)
                    .attr("y2" , 400)
                    .style("stroke-width", 2)
                    .style("stroke" , "black")
@@ -255,9 +377,9 @@ class Bar
         let lineY = d3.select("#bar-chart")
                    .select(".bar-svg")
                    .append("line")
-                  .attr("x1" , 50)
+                  .attr("x1" , 65)
                   .attr("y1" ,400)
-                  .attr("x2" , 50)
+                  .attr("x2" , 65)
                   .attr("y2" , 50)
                   .style("stroke-width", 2)
                   .style("stroke" , "black")
@@ -265,48 +387,42 @@ class Bar
 
                   iter++
         }
+        //Second+ times creating the chart
         if(iter > 0)
         {
-        let that = this;
-        //console.log(that.currPerson)
-        var date = that.currPerson.map(d => d.dateOfSleep)
-        var time = that.currPerson.map(d => d.minutesAsleep)
-        //console.log(time)
+            let that = this;
 
+            var date = that.currPerson.map(d => d.dateOfSleep)
+            var time = that.currPerson.map(d => d.minutesAsleep)
 
-        var maxTime = d3.max(that.currPerson.map(d => d.minutesAsleep))
-        var minTime = d3.min(that.currPerson.map(d => d.minutesAsleep))
+            var maxTime = d3.max(that.currPerson.map(d => d.minutesAsleep))
+            var minTime = d3.min(that.currPerson.map(d => d.minutesAsleep))
 
-        //minutesToHours is a method that takes in given minutes and converts to an hour minute string format
-        var stringTimeD = that.minutesToHours(maxTime)
-        var stringTimeC = that.minutesToHours(Math.floor(maxTime*(3/4)))
-        var stringTimeB = that.minutesToHours(Math.floor(maxTime/2))
-        var stringTimeA = that.minutesToHours(Math.floor(maxTime*(1/4)))
+            //minutesToHours is a method that takes in given minutes and converts to an hour minute string format
+            var stringTimeD = that.minutesToHours(maxTime)
+            var stringTimeC = that.minutesToHours(Math.floor(maxTime*(3/4)))
+            var stringTimeB = that.minutesToHours(Math.floor(maxTime/2))
+            var stringTimeA = that.minutesToHours(Math.floor(maxTime*(1/4)))
 
-        var yMinutes =[0 ,Math.floor(maxTime*(1/4)), Math.floor(maxTime/2), Math.floor(maxTime*(3/4)), maxTime ]
-        var yTicks = ["0:00" , stringTimeA, stringTimeB, stringTimeC, stringTimeD]
-        //The first chunk of data will be present in a two week span, the default will be from the last recording date
-        //to 14 days(2 weeks) prior, hence the x.length - 14
-        var x = that.currPerson.map(d => d.dateOfSleep)
-        
-        var xTicks = []
+            var yMinutes =[0 ,Math.floor(maxTime*(1/4)), Math.floor(maxTime/2), Math.floor(maxTime*(3/4)), maxTime ]
+            var yTicks = ["0:00" , stringTimeA, stringTimeB, stringTimeC, stringTimeD]
+            //The first chunk of data will be present in a two week span, the default will be from the last recording date
+            //to 14 days(2 weeks) prior, hence the x.length - 14
+            var x = that.currPerson.map(d => d.dateOfSleep)
+            
+            var xTicks = []
         if(that.parsedVal == -1)
         {
             xTicks = x.slice((x.length - 1) - 14, x.length - 1)
             this.twoWeeks = that.currPerson.slice((that.currPerson.length - 1) -14, that.currPerson.length - 1)
-
         }
         else
         {
             xTicks = x.slice(that.parsedVal, that.parsedVal + 14)
             console.log(xTicks)
             this.twoWeeks = that.currPerson.slice(that.parsedVal, that.parsedVal + 14)
-
-
         }
-        console.log("xTicks")
-        console.log(xTicks)
-        //this.twoWeeks = that.currPerson.slice((that.currPerson.length - 1) -14, that.currPerson.length - 1)
+        
         this.xScale = d3.scaleLinear()
                   .domain([new Date(Date.parse(that.scaleData[0])), new Date(Date.parse(that.scaleData[that.scaleData.length - 1]))])
                   .range([50,600])
@@ -322,7 +438,7 @@ class Bar
                     .select(".bar-svg")
                     .append("text")
                     .attr("class" , "y-text"+j)
-                    .attr("x" ,30)
+                    .attr("x" ,45)
                     .attr("y", that.yScale([yMinutes[j]]))
                     .style("stroke" , "gray")
                     .style("font-size", "9pt")
@@ -331,49 +447,45 @@ class Bar
                 d3.select("#bar-chart")
                     .select(".bar-svg")
                     .append("line")
-                    .attr("x1" ,43)
+                    .attr("x1" ,58)
                     .attr("y1", that.yScale([yMinutes[j]]))
-                    .attr("x2" ,57)
+                    .attr("x2" ,72)
                     .attr("y2", that.yScale([yMinutes[j]]))
                     .style("stroke" , "black")
                     .style("stroke-width" , 1)
-
-        
                   }
-        for(let j = 0; j < xTicks.length; j++)
-        {
-            d3.select("#bar-chart")
-                .select(".bar-svg")
-                .append("text")
-                .attr("class" , "x-text"+j)
-                .attr("y" ,20 + that.xScale(new Date(Date.parse(that.scaleData[j]))))
-                .attr("x", -410)
-                .attr('transform', 'rotate(-90)')
-                .style("stroke" , "gray")
-                .style("font-size", "9pt")
-                .style("text-anchor" , "end")
-                .text(xTicks[j])
-                
-                
-                
-            d3.select("#bar-chart")
-                .select(".bar-svg")
-                .append("line")
-                .attr("x1" ,13 + that.xScale(new Date(Date.parse(that.scaleData[j]))))
-                .attr("y1", 407)
-                .attr("x2" ,13 + that.xScale(new Date(Date.parse(that.scaleData[j]))))
-                .attr("y2", 393)
-                .style("stroke" , "black")
-                .style("stroke-width" , 1)
 
-        
-        }
+            for(let j = 0; j < xTicks.length; j++)
+            {
+                d3.select("#bar-chart")
+                    .select(".bar-svg")
+                    .append("text")
+                    .attr("class" , "x-text"+j)
+                    .attr("y" ,35 + that.xScale(new Date(Date.parse(that.scaleData[j]))))
+                    .attr("x", -410)
+                    .attr('transform', 'rotate(-90)')
+                    .style("stroke" , "gray")
+                    .style("font-size", "9pt")
+                    .style("text-anchor" , "end")
+                    .text(xTicks[j])
+                    
+                d3.select("#bar-chart")
+                    .select(".bar-svg")
+                    .append("line")
+                    .attr("x1" ,28 + that.xScale(new Date(Date.parse(that.scaleData[j]))))
+                    .attr("y1", 407)
+                    .attr("x2" ,28 + that.xScale(new Date(Date.parse(that.scaleData[j]))))
+                    .attr("y2", 393)
+                    .style("stroke" , "black")
+                    .style("stroke-width" , 1)
+            }
+
         that.textOnChart = true
         that.drawRectangles(that.currPerson,xTicks, 0)
     }
     else if(that.textOnChart == true)
-        {
-         for(let j = 0; j < yTicks.length; j++)
+    {
+        for(let j = 0; j < yTicks.length; j++)
         {
             d3.select("#bar-chart")
                 .select(".bar-svg")
@@ -388,17 +500,22 @@ class Bar
                 .select(".y-text"+j)
                 .text(yTicks[j])    
         }
-        
-      
+        for(let j = 0; j < xTicks.length; j++)
+        {
+            d3.select("#bar-chart")
+                .select(".bar-svg")
+                .select(".x-text"+j)
+                .text(xTicks[j])    
+        }
         that.drawRectangles(that.currPerson,xTicks, 1)
-
         }
     }
-    
-        
-                        
+                         
     }
 
+    /**
+     * Converts minutes to hours, time objects in data usually come in as minutes
+     */
     minutesToHours(num)
     {
         var hours = Math.floor(num / 60);  
@@ -412,6 +529,10 @@ class Bar
         return hours+ ":" + minutes
         }
     }
+    /**
+     * Updates the header data of bar chart based on which person is selected,
+     * and the start date that is selected.
+     */
     updateHeaderData(newData,newI)
     {
         let that = this;
@@ -424,6 +545,13 @@ class Bar
         that.story(1)
     }
 
+    /**
+     * Method used to draw each bar on chart. Uses the person's data passed in as well as the selected date
+     * to populate bars for bar chart accordingly.
+     * @param {*} data 
+     * @param {*} dateRange 
+     * @param {*} iter 
+     */
     drawRectangles(data, dateRange, iter)
     {
         let that = this;
@@ -438,9 +566,6 @@ class Bar
             dataRange = data.slice(that.parsedVal, that.parsedVal + 14)
         }
        
-
-
-     
         this.greaterArr = []
         this.lesserArr = []
         this.indexArrG = []
@@ -456,13 +581,10 @@ class Bar
             {
                 this.lesserArr.push(dataRange[x])
                 this.indexArrL.push(x)
-
             }
         }
         
         that.story()
-
-        
 
         //first time doing rectangles
         if(iter < 1)
@@ -476,23 +598,22 @@ class Bar
                 {
                     d3.select("#bar-chart")
                     .select(".bar-svg")
-                    .append("rect").attr("class" , "rect-"+j+""+i)
-                    .attr("x", that.xScale(new Date(Date.parse(that.scaleData[j]))))
+                    .append("rect").attr("class" , "rect-"+j+""+i).transition().duration(750)
+                    .attr("x", 15 + that.xScale(new Date(Date.parse(that.scaleData[j]))))
                     .attr("y", that.yScale(dataRange[j].light))
                     .attr("width", 25)
                     .attr("height", 400 - that.yScale(dataRange[j].light))
                     .style("fill", "steelblue")
                     .style("opacity" , .8)
-                
-                  
+         
                 }
                 //rem Sleep
                 if(i == 1)
                 {
                     d3.select("#bar-chart")
                     .select(".bar-svg")
-                    .append("rect").attr("class" , "rect-"+j+""+i)
-                    .attr("x",that.xScale(new Date(Date.parse(that.scaleData[j]))))
+                    .append("rect").attr("class" , "rect-"+j+""+i).transition().duration(750)
+                    .attr("x",15 + that.xScale(new Date(Date.parse(that.scaleData[j]))))
                     .attr("y",that.yScale(dataRange[j].light) - (400 -that.yScale(dataRange[j].rem)))
                     .attr("width", 25)
                     .attr("height", 400 - that.yScale(dataRange[j].rem))
@@ -504,8 +625,8 @@ class Bar
                 {
                     d3.select("#bar-chart")
                     .select(".bar-svg")
-                    .append("rect").attr("class" , "rect-"+j+""+i)
-                    .attr("x", that.xScale(new Date(Date.parse(that.scaleData[j]))))
+                    .append("rect").attr("class" , "rect-"+j+""+i).transition().duration(750)
+                    .attr("x", 15 + that.xScale(new Date(Date.parse(that.scaleData[j]))))
                     .attr("y",that.yScale(dataRange[j].light) - (400 -that.yScale(dataRange[j].rem)) - (400 -that.yScale(dataRange[j].deep)))
                     .attr("width", 25)
                     .attr("height", 400 - that.yScale(dataRange[j].deep))
@@ -514,10 +635,7 @@ class Bar
                 }
             }
         }
-
-        that.drawLegend()
-        
-        
+        that.drawLegend()       
         }
 
         //second or more times, must access the id or class of the rectangle and change heights
@@ -533,21 +651,20 @@ class Bar
                 {
                     d3.select("#bar-chart")
                     .select(".bar-svg")
-                    .select(".rect-"+j+""+i)
-                    .attr("x", that.xScale(new Date(Date.parse(that.scaleData[j]))))
+                    .select(".rect-"+j+""+i).transition().duration(750)
+                    .attr("x", 15 + that.xScale(new Date(Date.parse(that.scaleData[j]))))
                     .attr("y", that.yScale(dataRange[j].light))
                     .attr("width", 25)
                     .attr("height", 400 - that.yScale(dataRange[j].light))
-                    
-                  
+    
                 }
                 //rem Sleep
                 if(i == 1)
                 {
                     d3.select("#bar-chart")
                     .select(".bar-svg")
-                    .select(".rect-"+j+""+i)
-                    .attr("x",that.xScale(new Date(Date.parse(that.scaleData[j]))))
+                    .select(".rect-"+j+""+i).transition().duration(750)
+                    .attr("x", 15 +that.xScale(new Date(Date.parse(that.scaleData[j]))))
                     .attr("y",that.yScale(dataRange[j].light) - (400 -that.yScale(dataRange[j].rem)))
                     .attr("width", 25)
                     .attr("height", 400 - that.yScale(dataRange[j].rem))
@@ -558,8 +675,8 @@ class Bar
                 {
                     d3.select("#bar-chart")
                     .select(".bar-svg")
-                    .select(".rect-"+j+""+i)
-                    .attr("x", that.xScale(new Date(Date.parse(that.scaleData[j]))))
+                    .select(".rect-"+j+""+i).transition().duration(750)
+                    .attr("x", 15 + that.xScale(new Date(Date.parse(that.scaleData[j]))))
                     .attr("y",that.yScale(dataRange[j].light) - (400 -that.yScale(dataRange[j].rem)) - (400 -that.yScale(dataRange[j].deep)))
                     .attr("width", 25)
                     .attr("height", 400 - that.yScale(dataRange[j].deep))
@@ -568,7 +685,6 @@ class Bar
             }
         }
 
-      
         }
         d3.select("#bar-chart")
         .select(".bar-svg")
@@ -611,14 +727,13 @@ class Bar
             .select(".totalInfo")
             .style("opacity",1)
             .text(that.minutesToHours(currDate.minutesAsleep))
-            //console.log(that.minutesToHours(light))
-         
         })
-      
 
-   
     }
-
+    /**
+     * Method used to draw legend on bar chart. Matches the three different colors
+     * on each bar to the respective stage of sleep.
+     */
     drawLegend()
     {
         let that = this;
@@ -678,7 +793,10 @@ class Bar
           that.infoBox()
     }
 
-
+    /**
+     * Creates and draws the information box that displays below the 
+     * chart which shows information on the current bar being hovered on.
+     */
     infoBox()
     {
 
@@ -727,8 +845,6 @@ class Bar
         .style("font-size", "10pt")
         .style("opacity", 0)
 
-        
-
         //Deep label and info
         d3.select("#bar-chart")
         .select(".bar-svg")
@@ -749,8 +865,6 @@ class Bar
         .style("stroke" , "steelblue")
         .style("font-size", "10pt")
         .style("opacity", 0)
-
-
 
         //Light label and info
         d3.select("#bar-chart")
@@ -793,34 +907,31 @@ class Bar
         .style("font-size", "10pt")
         .style("opacity", 0)
 
-
-        
-        
-        
-
-        
-       
     }
 
+    /**
+     * Method that creates and highlights days that a person experienced 
+     * greater or less than 75% sleep quality. Changes the color of the bar being
+     * hovered on to red and displays the total amount of days in each category next to the
+     * text.
+     */
     story()
     {
         let that = this
-
-        
 
         d3.select("#bar-chart")
         .select(".bar-svg")
         .select(".Greater75")
         .style("opacity" , 1)
-        .text("" + that.greaterArr.length)
+        .style("stroke", 'red')
+        .text(" " + that.greaterArr.length)
 
         d3.select("#bar-chart")
         .select(".bar-svg")
         .select(".Less75")
         .style("opacity" , 1)
-        .text("" + that.lesserArr.length)
-
-        
+        .style("stroke", 'red')
+        .text(" " + that.lesserArr.length)
 
         d3.select("#bar-chart")
         .select(".bar-svg")
@@ -834,15 +945,21 @@ class Bar
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"0")
+                .transition()
+                .duration(500)
                 .style("fill", "red")
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"1")
+                .transition()
+                .duration(500)
                 .style("opacity",.67)
                 .style("fill", "red")
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"2")
+                .transition()
+                .duration(500)
                 .style("fill", "red")
                 
             }
@@ -856,21 +973,26 @@ class Bar
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"0")
+                .transition()
+                .duration(500)
                 .style("fill", "steelblue")
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"1")
+                .transition()
+                .duration(500)
                 .style("fill", "skyblue")
                 .style("opacity",.8)
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"2")
+                .transition()
+                .duration(500)
                 .style("fill", "skyblue")
                 
             }
         })
-
-        
+      
         d3.select("#bar-chart")
         .select(".bar-svg")
         .select(".lesserLabel")
@@ -883,17 +1005,22 @@ class Bar
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"0")
+                .transition()
+                .duration(500)
                 .style("fill", "red")
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"1")
+                .transition()
+                .duration(500)
                 .style("opacity",.67)
                 .style("fill", "red")
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"2")
+                .transition()
+                .duration(500)
                 .style("fill", "red")
-                
             }
         })
         .on("mouseout" ,function(d)
@@ -905,15 +1032,21 @@ class Bar
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"0")
+                .transition()
+                .duration(500)
                 .style("fill", "steelblue")
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"1")
+                .transition()
+                .duration(500)
                 .style("fill", "skyblue")
                 .style("opacity",.8)
                 d3.select("#bar-chart")
                 .select(".bar-svg")
                 .select(".rect-"+indexValue+"2")
+                .transition()
+                .duration(500)
                 .style("fill", "skyblue")
                 
             }

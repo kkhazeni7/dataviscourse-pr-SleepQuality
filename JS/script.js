@@ -13,16 +13,8 @@ Promise.all([
 .then(function(data) {
    
     let sleepData = data;
-    //console.log(sleepData);
+
     let graph = new Graph(sleepData);
     graph.drawGraph()
 
 })
-
-    
-
-
-   //  let sleepData = data;
-   //  console.log(sleepData);
-   //  let graph = new Graph(sleepData);
-   //  graph.drawGraph()
